@@ -5,17 +5,13 @@ import levels from "./levels";
 
 const { combine, label, printf, splat, timestamp } = Winston.format;
 
-export function message(prefix: string, colors: boolean, full: boolean) {
+export function message(prefix: string) {
     return combine(
-        timestamp({ format: full ? "M/D/YYYY HH:mm:ss" : "HH:mm:ss" }),
+        timestamp({ format: "M/D/YYYY HH:mm:ss" }),
         splat(),
         label({ label: Colors.cyan(prefix.toUpperCase()) }),
         printf((info) => {
-            const formatted = `${Colors.dim(info.timestamp)} ${Colors.dim("[")} ${info.label} ${Colors.dim("]")} ${levels(info.level)}${info.message}`;
-
-            if (colors) return formatted;
-
-            return Colors.stripColors(formatted);
+            return `${Colors.dim(info.timestamp)} ${Colors.dim("[")} ${info.label} ${Colors.dim("]")} ${levels(info.level)}${info.message}`;
         }),
     );
 }

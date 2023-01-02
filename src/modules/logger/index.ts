@@ -1,9 +1,12 @@
 import Colors from "colors";
-import Path from "path";
+import File from "fs-extra";
+import Readline from "n-readlines";
 import Table from "as-table"
 import Utility from "util";;
 import Winston from "winston";
 import QRCode from "qrcode-terminal";
+
+import { Tail } from "tail";
 
 import levels from "./levels";
 import random from "./random";
@@ -19,7 +22,6 @@ import Loggers from "./loggers";
 import PluginLogger from "./plugin";
 import PrefixedLogger from "./prefixed";
 
-const transports = Winston.transports;
 const internal: { [key: string]: Log } = {};
 const loggers: Loggers = {};
 
@@ -36,7 +38,7 @@ function create(prefix: string): Log {
         exitOnError: false,
     }) as Log;
 
-    logger.add(new Winston.transports.Console({ format: message(prefix, true, false) }));
+    logger.add(new Winston.transports.Console({ format: message(prefix) }));
 
     const grid = Table.configure({
         title: (item: string) => Colors.cyan(item),
@@ -44,6 +46,27 @@ function create(prefix: string): Log {
         delimiter: Colors.dim(" | "),
         dash: Colors.dim("-"),
     });
+
+    logger.tail = (filename: string) => {
+        if (!File.existsSync(filename)) {
+            logger.warn(`file doesn't exist ${filename}`);
+
+            return;
+        }
+
+        const reader = new Readline(filename);
+
+        let line;
+
+        while (line = reader.next()) {
+            direct.info(line)
+        }
+
+        const tail = new Tail(filename);
+
+        tail.on("line", (data) => direct.info(data));
+        tail.on("error", (error) => direct.error(error));
+    }
 
     logger.json = (value: any, length?: number) => {
         direct.info(`\n${Utility.inspect(value, { colors: true, maxStringLength: length || 100 })}\n`);

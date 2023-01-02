@@ -44,6 +44,11 @@ Restart the service
 sudo hkd service restart
 ```
 
+View the log
+```
+sudo hkd log
+```
+
 View bridges
 ```
 sudo hkd bridge list

@@ -6,6 +6,7 @@ import Logger from "./modules/logger";
 
 import BridgeCommand from "./commands/bridges";
 import ConfigCommand from "./commands/config";
+import LogCommand from "./commands/log";
 import PluginCommand from "./commands/plugins";
 import ServerCommand from "./commands/server";
 import ServiceCommand from "./commands/service";
@@ -33,6 +34,7 @@ export = function Main(args?: string[] | undefined): void {
     PluginCommand(program);
     ConfigCommand(program);
     ServiceCommand(program);
+    LogCommand(program);
 
     program.parse(args || process.argv);
 };

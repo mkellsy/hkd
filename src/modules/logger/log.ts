@@ -3,6 +3,8 @@ import { Logger as BaseLogger } from "winston";
 import Background from "./background";
 
 interface Log extends BaseLogger {
+    tail: (filename: string) => void;
+
     json: (value: any, length?: number) => void;
     print: (value: any) => void;
     table: (value: any) => void;

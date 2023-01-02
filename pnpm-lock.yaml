@@ -4,9 +4,11 @@ specifiers:
   '@tsconfig/node10': ^1.0.8
   '@types/fs-extra': ^9.0.13
   '@types/inquirer': ^7.3.1
+  '@types/n-readlines': ^1.0.3
   '@types/node': ^17.0.12
   '@types/qrcode-terminal': ^0.12.0
   '@types/shortid': ^0.0.29
+  '@types/tail': ^2.2.1
   as-table: ^1.0.55
   chokidar: ^3.5.3
   colors: ^1.4.0
@@ -16,6 +18,7 @@ specifiers:
   hap-nodejs: ^0.11.0
   homebridge: ^1.6.0
   inquirer: ^8.2.4
+  n-readlines: ^1.0.1
   node-cache: ^5.1.2
   nodemon: ^2.0.15
   npm: ^9.2.0
@@ -24,6 +27,7 @@ specifiers:
   rimraf: ^3.0.2
   sanitize-filename: ^1.6.3
   shortid: ^2.2.16
+  tail: ^2.2.5
   typescript: ^4.6.2
   vm2: ^3.9.9
   winston: ^3.6.0
@@ -39,11 +43,13 @@ dependencies:
   hap-nodejs: 0.11.0
   homebridge: 1.6.0
   inquirer: 8.2.5
+  n-readlines: 1.0.1
   node-cache: 5.1.2
   npm: 9.2.0
   qrcode-terminal: 0.12.0
   sanitize-filename: 1.6.3
   shortid: 2.2.16
+  tail: 2.2.5
   vm2: 3.9.11
   winston: 3.8.2
   winston-transport: 4.5.0
@@ -53,9 +59,11 @@ devDependencies:
   '@tsconfig/node10': 1.0.9
   '@types/fs-extra': 9.0.13
   '@types/inquirer': 7.3.3
+  '@types/n-readlines': 1.0.3
   '@types/node': 17.0.45
   '@types/qrcode-terminal': 0.12.0
   '@types/shortid': 0.0.29
+  '@types/tail': 2.2.1
   eslint: 8.28.0
   nodemon: 2.0.20
   prettier: 2.8.0
@@ -190,6 +198,12 @@ packages:
       rxjs: 6.6.7
     dev: true
 
+  /@types/n-readlines/1.0.3:
+    resolution: {integrity: sha512-6zMvlOZp56sEEndnkEX+A05Q+LrPB7yDUX1d5oE0aOF9rIE10ndhZHEy0mBFqzBUIw5sSFMUypwgD3FehplPvg==}
+    dependencies:
+      '@types/node': 17.0.45
+    dev: true
+
   /@types/node/17.0.45:
     resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
     dev: true
@@ -200,6 +214,10 @@ packages:
 
   /@types/shortid/0.0.29:
     resolution: {integrity: sha512-9BCYD9btg2CY4kPcpMQ+vCR8U6V8f/KvixYD5ZbxoWlkhddNF5IeZMVL3p+QFUkg+Hb+kPAG9Jgk4bnnF1v/Fw==}
+    dev: true
+
+  /@types/tail/2.2.1:
+    resolution: {integrity: sha512-j75Gs5MiIpNR14wztQ4vtViUqxZi+lcgflyXC7P9iMgNnMab7XcV5p+2590IO3njsWWn5l8C+55ILk2CDDyaHg==}
     dev: true
 
   /@types/through/0.0.30:
@@ -1300,6 +1318,11 @@ packages:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==}
     dev: false
 
+  /n-readlines/1.0.1:
+    resolution: {integrity: sha512-z4SyAIVgMy7CkgsoNw7YVz40v0g4+WWvvqy8+ZdHrCtgevcEO758WQyrYcw3XPxcLxF+//RszTz/rO48nzD0wQ==}
+    engines: {node: '>=6.x.x'}
+    dev: false
+
   /nanoid/2.1.11:
     resolution: {integrity: sha512-s/snB+WGm6uwi0WjsZdaVcuf3KJXlfGl2LcxgwkEwJF0D/BWzVWAZW/XY4bFaiR7s0Jk3FPvlnepg1H1b1UwlA==}
     dev: false
@@ -1816,6 +1839,11 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       has-flag: 4.0.0
+
+  /tail/2.2.5:
+    resolution: {integrity: sha512-vsP7EaAEOr9H8qRfXMEiHvd+57XnAu9qxZw+4OsSGzHG5WYOA8wrOAaUCR3E0iE6Vxng1h34hgCyluyXc8ltng==}
+    engines: {node: '>= 6.0.0'}
+    dev: false
 
   /text-hex/1.0.0:
     resolution: {integrity: sha512-uuVGNWzgJ4yhRaNSiubPY7OjISw4sw4E5Uv0wbjp+OzcbmVU/rsT8ujgcXJhn9ypzsgr5vlzpPqP+MBBKcGvbg==}

@@ -21,7 +21,7 @@ class Internal {
             maxFiles: 10,
             tailable: true,
             level: "debug",
-            format: message(label, false, true),
+            format: message(label),
         }));
     }
 }
