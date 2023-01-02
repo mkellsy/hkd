@@ -5,39 +5,44 @@ import Server from "./";
 
 let LaunchDaemon: string = "";
 
-LaunchDaemon += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-LaunchDaemon += "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">";
-LaunchDaemon += "<plist version=\"1.0\">";
-LaunchDaemon += "    <dict>";
-LaunchDaemon += "        <key>Label</key>";
-LaunchDaemon += "        <string>org.hkd.hub</string>";
-LaunchDaemon += "        <key>EnvironmentVariables</key>";
-LaunchDaemon += "        <dict>";
-LaunchDaemon += "            <key>PATH</key>";
-LaunchDaemon += "            <string><![CDATA[/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin]]></string>";
-LaunchDaemon += "            <key>HOME</key>";
-LaunchDaemon += "            <string>/var/root</string>";
-LaunchDaemon += "        </dict>";
-LaunchDaemon += "        <key>Program</key>";
-LaunchDaemon += `       <string>${Server.locate("hkd") || "hkd"}</string>`;
-LaunchDaemon += "        <key>ProgramArguments</key>";
-LaunchDaemon += "        <array>";
-LaunchDaemon += `            <string>${Server.locate("hkd") || "hkd"}</string>`;
-LaunchDaemon += "            <string>start</string>";
-LaunchDaemon += "        </array>";
-LaunchDaemon += "        <key>RunAtLoad</key>";
-LaunchDaemon += "        <true/>";
-LaunchDaemon += "        <key>KeepAlive</key>";
-LaunchDaemon += "        <true/>";
-LaunchDaemon += "        <key>SessionCreate</key>";
-LaunchDaemon += "        <true/>";
-LaunchDaemon += "    </dict>";
-LaunchDaemon += "</plist>";
+LaunchDaemon += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+LaunchDaemon += "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n";
+LaunchDaemon += "<plist version=\"1.0\">\n";
+LaunchDaemon += "    <dict>\n";
+LaunchDaemon += "        <key>Label</key>\n";
+LaunchDaemon += "        <string>org.hkd</string>\n";
+LaunchDaemon += "        <key>UserName</key>\n";
+LaunchDaemon += "        <string>root</string>\n";
+LaunchDaemon += "        <key>EnvironmentVariables</key>\n";
+LaunchDaemon += "        <dict>\n";
+LaunchDaemon += "            <key>PATH</key>\n";
+LaunchDaemon += "            <string><![CDATA[/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin]]></string>\n";
+LaunchDaemon += "            <key>HOME</key>\n";
+LaunchDaemon += "            <string>/var/root</string>\n";
+LaunchDaemon += "            <key>USER</key>\n";
+LaunchDaemon += "            <string>root</string>\n";
+LaunchDaemon += "        </dict>\n";
+LaunchDaemon += "        <key>Program</key>\n";
+LaunchDaemon += `       <string>${Server.locate("hkd") || "hkd"}</string>\n`;
+LaunchDaemon += "        <key>ProgramArguments</key>\n";
+LaunchDaemon += "        <array>\n";
+LaunchDaemon += `            <string>${Server.locate("hkd") || "hkd"}</string>\n`;
+LaunchDaemon += "            <string>start</string>\n";
+LaunchDaemon += "        </array>\n";
+LaunchDaemon += "        <key>RunAtLoad</key>\n";
+LaunchDaemon += "        <true/>\n";
+LaunchDaemon += "        <key>KeepAlive</key>\n";
+LaunchDaemon += "        <true/>\n";
+LaunchDaemon += "        <key>SessionCreate</key>\n";
+LaunchDaemon += "        <true/>\n";
+LaunchDaemon += "    </dict>\n";
+LaunchDaemon += "</plist>\n";
 
 const ServicePath = "/Library/LaunchDaemons/org.hkd.plist";
 
 export function LoadService() {
     if (File.existsSync(ServicePath)) {
+        execSync(`chmod 4755 ${ServicePath}`);
         execSync(`launchctl load -w ${ServicePath}`);
     }
 }

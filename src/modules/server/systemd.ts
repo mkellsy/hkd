@@ -5,21 +5,21 @@ import Server from "./";
 
 let LaunchDaemon: string = "";
 
-LaunchDaemon += "[Unit]";
-LaunchDaemon += "Description=HKD";
-LaunchDaemon += "After=network-online.target";
-LaunchDaemon += "";
-LaunchDaemon += "[Service]";
-LaunchDaemon += "Type=simple";
-LaunchDaemon += "User=root";
-LaunchDaemon += `ExecStart=${Server.locate("hkd") || "hkd"} start`;
-LaunchDaemon += "Restart=always";
-LaunchDaemon += "RestartSec=3";
-LaunchDaemon += "KillSignal=SIGINT";
-LaunchDaemon += "";
-LaunchDaemon += "[Install]";
-LaunchDaemon += "WantedBy=multi-user.target";
-LaunchDaemon += "";
+LaunchDaemon += "[Unit]\n";
+LaunchDaemon += "Description=HKD\n";
+LaunchDaemon += "After=network-online.target\n";
+LaunchDaemon += "\n";
+LaunchDaemon += "[Service]\n";
+LaunchDaemon += "Type=simple\n";
+LaunchDaemon += "User=root\n";
+LaunchDaemon += `ExecStart=${Server.locate("hkd") || "hkd"} start\n`;
+LaunchDaemon += "Restart=always\n";
+LaunchDaemon += "RestartSec=3\n";
+LaunchDaemon += "KillSignal=SIGINT\n";
+LaunchDaemon += "\n";
+LaunchDaemon += "[Install]\n";
+LaunchDaemon += "WantedBy=multi-user.target\n";
+LaunchDaemon += "\n";
 
 const ServicePath = "/etc/systemd/system/hkd.service";
 
