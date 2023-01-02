@@ -1,0 +1,61 @@
+# hub configuration
+hub:
+  port: 5100
+
+  # homekit paring code
+  pin: 037-45-157
+
+  # homekit username
+  username: 3C:CB:E3:C9:66:55
+
+  # hub brodcast engine bonjour, ciao or avahi
+  advertiser: ciao
+
+  # delay the start of the hub in seconds
+  autostart: 0
+
+# bridges array these are seperate instances of homebridge
+bridges:
+  - id: my-bridge
+
+    # display name, will be used in the log and any bridge screen
+    name: My Bridge
+
+    # bridge or development, development bridges are used to create
+    # plugins and allow you to map a bridge to a project folder
+    type: bridge
+
+    # if the bridge type is development, this is the path to your project
+    # this would be the root of your project, the same path that contains
+    # your prokect's package.json file
+    project: /path/to/project
+
+    # changes the behavior of the bridge, if chile is true, all accessories
+    # will be added to the hub's bridge, if false the bridge will start a
+    # self contained bridge that will require paring with homekit
+    child: false
+
+    # if not a child bridge this is the port the bridge will run on
+    port: 5110
+
+    # homekit pairing code for non child bridges
+    pin: 031-45-155
+
+    # homekit username for non child bridges
+    username: EB:DB:C7:5D:AE:BE
+
+    # bridge brodcast engine for non child bridges bonjour, ciao or avahi
+    advertiser: bonjour
+
+    # delay the start of the bridge in seconds
+    autostart: 0
+
+  - id: my-second-bridge
+    name: My Second Bridge
+    type: bridge
+    child: false
+    port: 5120
+    pin: 031-45-156
+    username: EB:DB:C7:5D:AE:CE
+    advertiser: ciao
+    autostart: 0

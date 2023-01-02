@@ -1,0 +1,16 @@
+{
+    "ignore": [
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        "node_modules"
+    ],
+    "watch": [
+        "src"
+    ],
+    "env": {
+        "NODE_ENV": "development"
+    },
+    "verbose": true,
+    "exec": "tsc && node ./bin/hkd -d start",
+    "ext": "ts"
+}

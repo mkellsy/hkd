@@ -1,0 +1,4 @@
+# location to store configs, bridges and plugins
+storage:
+  path: auto
+  logsize: 3
