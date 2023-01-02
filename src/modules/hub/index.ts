@@ -234,7 +234,7 @@ class Hub extends EventEmitter {
         (this.bridge as HAPBridge).publish({
             username: this.config.hub.username,
             port: this.config.hub.port,
-            pincode: this.config.hub.pin,
+            pincode: Config.pincode(this.config.hub.pin),
             category: Categories.BRIDGE,
             bind: "0.0.0.0",
             setupID: this.id,

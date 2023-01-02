@@ -309,7 +309,7 @@ export class Bridge extends EventEmitter {
         (this.bridge as HAPBridge).publish({
             username: this.settings.username as string,
             port: this.settings.port,
-            pincode: this.settings.pin as string,
+            pincode: Config.pincode(this.settings.pin),
             category: Categories.BRIDGE,
             bind: "0.0.0.0",
             setupID: this.setup,
@@ -652,7 +652,7 @@ export class Bridge extends EventEmitter {
                     (this.externalPorts as HBExternalPorts).requestPort(username).then((port) => {
                         accessory.publish({
                             username,
-                            pincode: this.settings.pin as string,
+                            pincode: Config.pincode(this.settings.pin),
                             category: accessories[i].category,
                             port,
                             bind: "0.0.0.0",

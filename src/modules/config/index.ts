@@ -71,6 +71,12 @@ class Config {
         return value;
     }
 
+    public static pincode(value?: string) {
+        const pin = (value || "").replace(/-/gi, "");
+
+        return `${pin.slice(0, 3)}-${pin.slice(3, 5)}-${pin.slice(5)}`;
+    }
+
     public static edit(config: Config, bridge?: BridgeConfig): void {
         let editCommand = "nano";
     

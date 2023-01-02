@@ -3,7 +3,7 @@ hub:
   port: 5100
 
   # homekit paring code
-  pin: 037-45-157
+  pin: 0374-5157
 
   # homekit username
   username: 3C:CB:E3:C9:66:55
@@ -39,7 +39,7 @@ bridges:
     port: 5110
 
     # homekit pairing code for non child bridges
-    pin: 031-45-155
+    pin: 0314-5155
 
     # homekit username for non child bridges
     username: EB:DB:C7:5D:AE:BE
@@ -55,7 +55,7 @@ bridges:
     type: bridge
     child: false
     port: 5120
-    pin: 031-45-156
+    pin: 0314-5156
     username: EB:DB:C7:5D:AE:CE
     advertiser: ciao
     autostart: 0
