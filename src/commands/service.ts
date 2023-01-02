@@ -2,7 +2,7 @@ import File from "fs-extra";
 import Inquirer from "inquirer";
 import { Command } from "commander";
 
-import Config, { HubConfig, initilize } from "../modules/config";
+import Config from "../modules/config";
 import Logger from "../modules/logger";
 import Server from "../modules/server";
 import Sudo from "../modules/sudo";
@@ -13,14 +13,8 @@ import * as Systemd from "../modules/server/systemd";
 export default function (program: Command) {
     program.command("service <action>")
         .description("manage the hkd service")
-        .option("-c, --config <path>", "define the path to the config file")
-        .option("--port <1-65535>", "define the port for a new bridge")
-        .option("--pin <xxx-xxx>", "define pin for a new bridge")
-        .option("--advertiser <bonjour|ciao>", "set the bridge advertiser")
-        .option("--autostart <integer>", "define number of seconds to wait on start for a new bridge")
-        .action(async (action, command: { [key: string]: string | undefined }) => {
+        .action((action) => {
             const log = Logger("cli");
-            const prompt: Inquirer.PromptModule = Inquirer.createPromptModule();
 
             if (!Sudo()) {
                 log.warn("you are running in user mode, did you forget to use 'sudo'?");
@@ -28,7 +22,6 @@ export default function (program: Command) {
                 return;
             }
 
-            let hub: HubConfig | undefined;
             let service: string | undefined;
             let path: string | undefined;
             let load: Function | undefined;
@@ -58,24 +51,8 @@ export default function (program: Command) {
                     break;
             }
 
-            const filename = Config.locate(command.config);
-            const config = Config.configure(filename);
-
             switch (action) {
                 case "install":
-                    if (!config.hub || !config.hub.port) {
-                        hub = await initilize(
-                            prompt,
-                            config,
-                            parseInt(command.port || "0", 10),
-                            command.pin || "0314-5154",
-                            parseInt(command.autostart || "0", 10),
-                            command.advertiser || "bonjour",
-                        );
-
-                        Config.save(config, hub);
-                    }
-
                     if (service && path && load) {
                         log.info("installing the hkd service");
                         File.writeFileSync(path, service);

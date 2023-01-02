@@ -1,8 +1,6 @@
 import BridgeConfig from "./bridge";
-import HubConfig from "./hub";
 
 interface ConfigFile {
-    hub?: HubConfig;
     bridges?: BridgeConfig[];
 }
 

@@ -54,11 +54,7 @@ export default function (program: Command) {
 
                         plugins = Plugins.installed(config);
 
-                        if (plugins.length > 0) {
-                            log.table(plugins);
-                        } else {
-                            log.warn("no plugins defined");
-                        }
+                        if (plugins.length > 0) log.table(plugins);
                     }
 
                     break;
@@ -117,11 +113,7 @@ export default function (program: Command) {
 
                         plugins = Plugins.installed(config);
 
-                        if (plugins.length > 0) {
-                            log.table(plugins);
-                        } else {
-                            log.warn("no plugins defined");
-                        }
+                        if (plugins.length > 0) log.table(plugins);
                     }
 
                     break;
@@ -129,12 +121,13 @@ export default function (program: Command) {
                 default:
                     plugins = Plugins.installed(config);
 
-                    if (plugins.length > 0) {
-                        log.table(plugins);
-                    } else {
+                    if (plugins.length === 0) {
                         log.warn("no plugins defined");
+
+                        return;
                     }
 
+                    log.table(plugins);
                     break;
             }
         });

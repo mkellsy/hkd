@@ -29,14 +29,10 @@ export default function (program: Command) {
 
             id = Config.sanitize(command.bridge as string);
 
-            if (!id) id = await Bridge.select(prompt, config, true);
+            if (!id) id = await Bridge.select(prompt, config);
 
             const bridge = config.bridges.find((entry) => entry.id === id);
 
-            if (bridge) {
-                Config.edit(config, bridge);
-            } else {
-                Config.edit(config);
-            }
+            if (bridge) Config.edit(config, bridge);
         });
 }

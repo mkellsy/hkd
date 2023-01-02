@@ -14,7 +14,7 @@ const reserved = [
     "advanced",
 ];
 
-export async function create(prompt: PromptModule, config: Config, name?: string, child?: boolean, port?: number, pin?: string, autostart?: number, advertiser?: string): Promise<BridgeConfig> {
+export async function create(prompt: PromptModule, config: Config, name?: string, port?: number, pin?: string, autostart?: number, advertiser?: "ciao" | "bonjour"): Promise<BridgeConfig> {
     let id = Config.sanitize(name || "");
 
     if (id
@@ -28,12 +28,11 @@ export async function create(prompt: PromptModule, config: Config, name?: string
             id,
             name,
             type: "bridge",
-            child: child || false,
             port,
             pin: pin || "0314-5154",
             username: Config.uuid(),
             autostart: autostart || 0,
-            advertiser,
+            advertiser: advertiser || "bonjour",
         }
     }
 
@@ -68,18 +67,10 @@ export async function create(prompt: PromptModule, config: Config, name?: string
             return true;
         },
     }, {
-        type: "confirm",
-        name: "child",
-        message: "create as a child bridge",
-        default: false,
-     }, {
         type: "number",
         name: "port",
-        when: (answers: Record<string, any>) => !answers.child,
         default: () => {
             port = port || 5100;
-
-            if (config.hub.port === port) port += 10;
 
             while (config.bridges.findIndex((entry) => parseInt(`${entry.port}`, 10) === port) >= 0) port += 10;
 
@@ -97,13 +88,11 @@ export async function create(prompt: PromptModule, config: Config, name?: string
         type: "input",
         name: "pin",
         message: "enter a pin for the bridge",
-        when: (answers: Record<string, any>) => !answers.child,
         default: "0314-5154",
     }, {
         type: "list",
         name: "advertiser",
         message: "Please select an advertiser",
-        when: (answers: Record<string, any>) => !answers.child,
         default: "bonjour",
         choices: [
             { name: "Bonjour", value: "bonjour" }, 
@@ -124,22 +113,10 @@ export async function create(prompt: PromptModule, config: Config, name?: string
 
     const input = (await prompt(questions)) as Record<string, any>;
 
-    if (input.child) {
-        return {
-            id: Config.sanitize(input.name) as string,
-            name: input.name,
-            type: input.type,
-            child: true,
-            autostart: parseInt(input.autostart, 10),
-            project: input.project,
-        }
-    }
-
     return {
         id: Config.sanitize(input.name) as string,
         name: input.name,
         type: input.type,
-        child: false,
         port: parseInt(input.port, 10),
         pin: input.pin,
         username: Config.uuid(),

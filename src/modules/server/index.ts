@@ -49,16 +49,15 @@ class Server extends EventEmitter {
     public async start() {
         this.log.info("starting hub");
 
-        if (!this.config.hub || !this.config.hub.port) {
-            this.log.warn(`service not initilized, please run ${this.log.yellow(`${process.platform === "win32" ? "" : "sudo "}hkd service install`)}`);
-
-            process.exit();
-        }
-
         if (this.watcher) await this.watcher.close();
 
         this.watcher = Watcher.watch(Path.resolve(this.config.storage.path as string, "hub.yaml"));
         this.watcher.removeAllListeners("change");
+
+        this.watcher.on("add", () => setTimeout(() => {
+            this.config.load();
+            this.hub.restart().catch((error) => this.log.error((error as Error).message));
+        }, 100));
 
         this.watcher.on("change", () => setTimeout(() => {
             this.config.load();

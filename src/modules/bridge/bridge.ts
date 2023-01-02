@@ -125,18 +125,8 @@ export class Bridge extends EventEmitter {
         this.development = this.settings.type === "development" || this.settings.type === "dev";
     }
 
-    public static async select(prompt: PromptModule,
-        config: Config,
-        hub: boolean = false,
-        filter: (bridge: BridgeConfig) => void = () => true) {
-
-        let bridges = config.bridges
-            .filter(filter)
-            .map((item) => ({ name: item.name, value: item.id }));
-
-        if (hub) {
-            bridges = [{ name: "Hub", value: "hub" }, ...bridges]
-        }
+    public static async select(prompt: PromptModule, config: Config) {
+        let bridges = config.bridges.map((item) => ({ name: item.name, value: item.id }));
 
         const questions = [{
             type: "list",
@@ -195,14 +185,13 @@ export class Bridge extends EventEmitter {
 
             this.pluginManager = new PluginManager(this.homebridge, { customPluginPath: Path.resolve(this.storage, "node_modules") });
 
-            if (!this.settings.child) this.bridge = new HAPBridge(this.settings.name, uuid.generate("HomeBridge"));
+            this.bridge = new HAPBridge(this.settings.name, uuid.generate("HomeKit"));
+
             if (!File.existsSync(Path.join(this.storage, "node_modules", "hap-nodejs"))) execSync("npm install --ignore-engines hap-nodejs", { cwd: this.storage });
 
             this.loadCache();
 
             const plugins = Plugins.load(this.config, this.settings, this.development);
-
-            if (this.settings.child) this.log.debug("starting in child mode");
 
             for (let i = 0; i < plugins.length; i += 1) {
                 if (File.existsSync(Path.join(plugins[i].directory, plugins[i].library))) {
@@ -249,13 +238,11 @@ export class Bridge extends EventEmitter {
             if (this.instance.accessories.length > 0) this.loadAccessories();
 
             this.restoreAccessories();
-
             this.homebridge.signalFinished();
 
             await Promise.allSettled(promises);
 
-            if (!this.settings.child) this.publishBridge();
-
+            this.publishBridge();
             this.running = true;
 
             if (this.watchers.package) await this.watchers.package.close();
@@ -279,7 +266,7 @@ export class Bridge extends EventEmitter {
 
             const waits: Promise<void>[] = [];
 
-            if (!this.settings.child) waits.push((this.bridge as HAPBridge).unpublish());
+            waits.push((this.bridge as HAPBridge).unpublish());
 
             if (this.watchers.package) waits.push(this.watchers.package.close());
             if (this.watchers.config) waits.push(this.watchers.config.close());
@@ -489,11 +476,7 @@ export class Bridge extends EventEmitter {
 
                 (this.records as Accessories).hap.push(accessory);
 
-                if (this.settings.child) {
-                    this.hub.addAccessories(accessory);
-                } else {
-                    this.bridge?.addBridgedAccessory(accessory);
-                }
+                this.bridge?.addBridgedAccessory(accessory);
             } else {
                 logger(`accessory ${accessoryIdentifier} returned empty set of services`);
             }
@@ -547,11 +530,7 @@ export class Bridge extends EventEmitter {
 
                         (this.records as Accessories).hap.push(accessory);
 
-                        if (this.settings.child) {
-                            this.hub.addAccessories(accessory);
-                        } else {
-                            this.bridge?.addBridgedAccessory(accessory);
-                        }
+                        this.bridge?.addBridgedAccessory(accessory);
                     } else {
                         logger(`platform %${platformType} returned an accessory at index ${index} with an empty set of services`);
                     }
@@ -591,12 +570,7 @@ export class Bridge extends EventEmitter {
             return accessory._associatedHAPAccessory;
         });
 
-        if (this.settings.child) {
-            this.hub.addAccessories(...hapAccessories);
-        } else {
-            this.bridge?.addBridgedAccessories(hapAccessories);
-        }
-
+        this.bridge?.addBridgedAccessories(hapAccessories);
         this.saveCache();
     }
 
@@ -611,12 +585,7 @@ export class Bridge extends EventEmitter {
             return accessory._associatedHAPAccessory;
         });
 
-        if (this.settings.child) {
-            this.hub.addAccessories(...hapAccessories);
-        } else {
-            this.bridge?.removeBridgedAccessories(hapAccessories);
-        }
-
+        this.bridge?.removeBridgedAccessories(hapAccessories);
         this.saveCache();
     }
 
@@ -742,11 +711,7 @@ export class Bridge extends EventEmitter {
             platformPlugins.configureAccessory(accessory);
 
             try {
-                if (this.settings.child) {
-                    this.hub.addAccessories(accessory._associatedHAPAccessory);
-                } else {
-                    this.bridge?.addBridgedAccessory(accessory._associatedHAPAccessory);
-                }
+                this.bridge?.addBridgedAccessory(accessory._associatedHAPAccessory);
             } catch (_error) {
                 return false;
             }

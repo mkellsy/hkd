@@ -2,11 +2,10 @@ interface BridgeConfig {
     id: string;
     name: string;
     type: string;
-    child: boolean;
-    port?: number;
-    pin?: string;
-    username?: string;
-    advertiser?: string;
+    port: number;
+    pin: string;
+    username: string;
+    advertiser: "ciao" | "bonjour";
     autostart: number;
     project?: string;
 }

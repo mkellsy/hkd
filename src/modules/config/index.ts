@@ -16,7 +16,6 @@ import Cache from "../cache";
 import ConfigFile from "./config";
 import DefaultConfig from "./default";
 import DeviceConfig from "./device";
-import HubConfig from "./hub";
 import Logger, { Internal, Log } from "../logger";
 import SandboxConfig from "./sandbox";
 import ServiceConfig from "./service";
@@ -24,7 +23,6 @@ import Signal from "./signal";
 import StorageConfig from "./storage";
 
 import { create } from "./create";
-import { initilize } from "./initilize";
 
 let current: Config;
 
@@ -77,100 +75,80 @@ class Config {
         return `${pin.slice(0, 3)}-${pin.slice(3, 5)}-${pin.slice(5)}`;
     }
 
-    public static edit(config: Config, bridge?: BridgeConfig): void {
+    public static edit(config: Config, bridge: BridgeConfig): void {
         let editCommand = "nano";
-    
+
         switch (process.platform) {
             case "darwin":
                 editCommand = "nano";
                 break;
-    
+
             case "linux":
             case "freebsd":
             case "openbsd":
                 editCommand = "nano";
                 break;
-    
+
             case "win32":
                 editCommand = "notepad";
                 break;
-    
+
             default:
                 Logger("config").error("unsuported operating system");
-    
+
                 process.exit(1);
         }
 
         const storage = config.storage.path as string;
-    
-        if (bridge) {
-            const sandbox = Bridge.loadConfig(config, bridge, true);
-            const current = Bridge.loadConfig(config, bridge);
-            const filename = Path.resolve(storage, UUID.generate());
-        
-            File.writeFileSync(filename, Yaml.stringify(sandbox));
-        
-            spawn(editCommand, [filename], {
-                stdio: "inherit",
-                detached: true,
-                cwd: storage,
-            }).on("data", (data) => {
-                process.stdout.pipe(data);
-            }).on("close", () => {
-                const updated = Yaml.parse(File.readFileSync(filename, "utf-8")) || {} as { [key: string]: any };
-        
-                Bridge.saveConfig(config, bridge, current, updated);
-                Config.increaseVersion(config, bridge);
-        
-                File.unlinkSync(filename);
-            });
-        } else {
-            const current = File.readFileSync(Path.resolve(storage, "hub.yaml"));
-            const filename = Path.resolve(storage, UUID.generate());
 
-            File.writeFileSync(filename, current);
+        const sandbox = Bridge.loadConfig(config, bridge, true);
+        const current = Bridge.loadConfig(config, bridge);
+        const filename = Path.resolve(storage, UUID.generate());
 
-            spawn(editCommand, [filename], {
-                stdio: "inherit",
-                detached: true,
-                cwd: storage,
-            }).on("data", (data) => {
-                process.stdout.pipe(data);
-            }).on("close", () => {
-                const updated = Yaml.parse(File.readFileSync(filename, "utf-8")) || {} as { [key: string]: any };
-        
-                File.writeFileSync(Path.resolve(storage, "hub.yaml"), Yaml.stringify(updated));
-                File.unlinkSync(filename);
-            });
-        }
-    }
+        File.writeFileSync(filename, Yaml.stringify(sandbox));
 
-    public static save(config: Config, hub: HubConfig, bridges: BridgeConfig[] = []) {
-        const storage = config.storage.path as string;
-        const updated = Yaml.stringify({ hub, bridges });
+        spawn(editCommand, [filename], {
+            stdio: "inherit",
+            detached: true,
+            cwd: storage,
+        }).on("data", (data) => {
+            process.stdout.pipe(data);
+        }).on("close", () => {
+            const updated = Yaml.parse(File.readFileSync(filename, "utf-8")) || {} as { [key: string]: any };
 
-        File.writeFileSync(Path.resolve(storage, "hub.yaml"), updated);
+            Bridge.saveConfig(config, bridge, current, updated);
+            Config.increaseVersion(config, bridge);
+
+            File.unlinkSync(filename);
+        });
     }
 
     public static addBridge(config: Config, bridge: BridgeConfig): void {
         const storage = config.storage.path as string;
         const filename = Path.resolve(storage, "hub.yaml");
-        const current = Yaml.parse(File.readFileSync(filename, "utf-8")) || {} as { [key: string]: any };
 
-        current.bridges.push(bridge);
+        let current: ConfigFile = { bridges: [] };
 
-        File.writeFileSync(Path.resolve(storage, "hub.yaml"), Yaml.stringify(current));
+        if (File.existsSync(filename)) current = Yaml.parse(File.readFileSync(filename, "utf-8")) || {} as ConfigFile;
+
+        current.bridges?.push(bridge);
+
+        File.writeFileSync(filename, Yaml.stringify(current));
     }
 
     public static removeBridge(config: Config, bridge: BridgeConfig): void {
         const storage = config.storage.path as string;
         const filename = Path.resolve(storage, "hub.yaml");
-        const current = Yaml.parse(File.readFileSync(filename, "utf-8")) || {} as { [key: string]: any };
-        const index = current.bridges.findIndex((entry: BridgeConfig) => entry.id === bridge.id);
 
-        current.bridges.splice(index, 1);
+        let current: ConfigFile = { bridges: [] };
 
-        File.writeFileSync(Path.resolve(storage, "hub.yaml"), Yaml.stringify(current));
+        if (File.existsSync(filename)) current = Yaml.parse(File.readFileSync(filename, "utf-8")) || {} as ConfigFile;
+
+        const index = current.bridges?.findIndex((entry: BridgeConfig) => entry.id === bridge.id);
+
+        current.bridges?.splice(index || 0, 1);
+
+        File.writeFileSync(filename, Yaml.stringify(current));
 
         if (File.existsSync(Path.resolve(storage, `${bridge.id}.yaml`))) File.unlinkSync(Path.resolve(storage, `${bridge.id}.yaml`));
         if (File.existsSync(Path.resolve(storage, `${bridge.id}.accessories`))) File.removeSync(Path.resolve(storage, `${bridge.id}.accessories`));
@@ -183,9 +161,13 @@ class Config {
         if (bridge) {
             Bridge.touchConfig(config, bridge);
         } else {
-            const current = File.readFileSync(Path.resolve(storage, "hub.yaml"), "utf-8");
+            const filename = Path.resolve(storage, "hub.yaml");
 
-            File.writeFileSync(Path.resolve(storage, "hub.yaml"), current);
+            let current = "";
+
+            if (File.existsSync(filename)) current = File.readFileSync(filename, "utf-8");
+
+            File.writeFileSync(filename, current);
         }
     }
 
@@ -197,7 +179,7 @@ class Config {
 
     public static increaseVersion(config: Config, bridge: BridgeConfig) {
         const storage = Path.resolve(config.storage.path as string, bridge.id);
-    
+
         let pjson = {
             name: "plugins",
             description: "HOOBS Plugins",
@@ -205,11 +187,11 @@ class Config {
             private: true,
             dependencies: {},
         };
-    
+
         if (File.existsSync(Path.join(storage, "package.json"))) pjson = { ...pjson, ...(File.readJSONSync(Path.resolve(storage, "package.json"))) };
-    
+
         pjson.version = (new Date()).getTime().toString();
-    
+
         File.writeFileSync(Path.resolve(storage, "package.json"), JSON.stringify(pjson, undefined, 4));
     }
 
@@ -241,13 +223,15 @@ class Config {
     public static sanitize(value: string, prevent?: string): string | undefined {
         if (!value || value === "") return undefined;
         if (prevent && prevent !== "" && prevent.toLowerCase() === value.toLowerCase()) return undefined;
-    
+
         return Sanitize(value).toLowerCase().replace(/ /gi, "");
     }
 
     public load() {
-        if (File.existsSync(Path.resolve(this.storage.path as string, "hub.yaml"))) {
-            this.config = Yaml.parse(File.readFileSync(Path.resolve(this.storage.path as string, "hub.yaml"), "utf-8")) as ConfigFile || {};
+        const filename = Path.resolve(this.storage.path as string, "hub.yaml")
+
+        if (File.existsSync(filename)) {
+            this.config = Yaml.parse(File.readFileSync(filename, "utf-8")) as ConfigFile || {};
         }
     }
 
@@ -263,20 +247,12 @@ class Config {
         return this.app.storage;
     }
 
-    public get hub(): HubConfig {
-        return this.config.hub as HubConfig;
-    }
-
     public get bridges(): BridgeConfig[] {
         return this.config.bridges as BridgeConfig[] || [];
     }
 
-    public get advertiser(): MDNSAdvertiser {
-        return this.getAdvertiser();
-    }
-
-    public getAdvertiser(bridge?: BridgeConfig): MDNSAdvertiser {
-        const value = ((bridge ? bridge.advertiser : this.hub.advertiser) || "").toLowerCase();
+    public getAdvertiser(bridge: BridgeConfig): MDNSAdvertiser {
+        const value = bridge.advertiser.toLowerCase();
 
         switch (value) {
             case "bonjour":
@@ -339,7 +315,6 @@ export default Config;
 
 export {
     create,
-    initilize,
 };
 
 export {
@@ -349,7 +324,6 @@ export {
     ConfigFile,
     DefaultConfig,
     DeviceConfig,
-    HubConfig,
     Internal,
     SandboxConfig,
     ServiceConfig,

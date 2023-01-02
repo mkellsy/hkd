@@ -1,6 +1,6 @@
 {
     "name": "hkd",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "license": "MIT",
     "main": "dist/main.js",
     "author": {
