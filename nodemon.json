@@ -11,6 +11,6 @@
         "NODE_ENV": "development"
     },
     "verbose": true,
-    "exec": "tsc && node ./bin/hkd -d start",
+    "exec": "tsc && node ./bin/hkd -d start --color=full",
     "ext": "ts"
 }

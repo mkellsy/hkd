@@ -12,7 +12,7 @@ LaunchDaemon += "\n";
 LaunchDaemon += "[Service]\n";
 LaunchDaemon += "Type=simple\n";
 LaunchDaemon += "User=root\n";
-LaunchDaemon += `ExecStart=${Server.locate("hkd") || "hkd"} start\n`;
+LaunchDaemon += `ExecStart=${Server.locate("hkd") || "hkd"} start --color=full\n`;
 LaunchDaemon += "Restart=always\n";
 LaunchDaemon += "RestartSec=3\n";
 LaunchDaemon += "KillSignal=SIGINT\n";

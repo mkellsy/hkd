@@ -10,6 +10,7 @@ export default function (program: Command) {
         .description("start the hub service")
         .option("-c, --config <path>", "define the path to the config file")
         .option("-p, --port <1-65535>", "change the port the hub runs on")
+        .option("--color=full", "force full color support")
         .action((command: { [key: string]: string | undefined }) => {
             const log = Logger("cli");
 
