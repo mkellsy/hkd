@@ -25,6 +25,14 @@ import PrefixedLogger from "./prefixed";
 const internal: { [key: string]: Log } = {};
 const loggers: Loggers = {};
 
+function shouldPrint(line: any): boolean {
+    if (line.toString().indexOf("] DEBUG") > 0) {
+        return process.env.level === "debug";
+    }
+
+    return true;
+}
+
 function create(prefix: string): Log {
     const direct = Winston.createLogger({
         level: process.env.level,
@@ -59,12 +67,15 @@ function create(prefix: string): Log {
         let line;
 
         while (line = reader.next()) {
-            direct.info(line)
+            if (shouldPrint(line)) direct.info(line);
         }
 
         const tail = new Tail(filename);
 
-        tail.on("line", (data) => direct.info(data));
+        tail.on("line", (data) => {
+            if (shouldPrint(data)) direct.info(data);
+        });
+
         tail.on("error", (error) => direct.error(error));
     }
 
